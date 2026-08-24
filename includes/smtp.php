@@ -18,13 +18,64 @@ class Mailer
 
     public function __construct()
     {
-        $addr = 'ssl://' . SMTP_HOST . ':' . SMTP_PORT;
-        $ctx = stream_context_create(array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false)));
-        $this->socket = @stream_socket_client($addr, $errno, $errstr, 15, STREAM_CLIENT_CONNECT, $ctx);
+        /* 存在 HTTP 代理环境变量时优先走 CONNECT 隧道（受限网络），失败回退直连 */
+        $proxy = self::detectProxy();
+        if ($proxy !== '') {
+            $this->socket = $this->connectViaProxy($proxy);
+        }
         if (!$this->socket) {
-            throw new Exception("SMTP 连接失败 ({$errno}): {$errstr}");
+            $addr = 'ssl://' . SMTP_HOST . ':' . SMTP_PORT;
+            $ctx = stream_context_create(array('ssl' => array('verify_peer' => false, 'verify_peer_name' => false)));
+            $this->socket = @stream_socket_client($addr, $errno, $errstr, 12, STREAM_CLIENT_CONNECT, $ctx);
+        }
+        if (!$this->socket) {
+            throw new Exception('SMTP 连接失败：无法连接 ' . SMTP_HOST . ':' . SMTP_PORT);
         }
         stream_set_timeout($this->socket, 15);
+    }
+
+    /** 检测 HTTP 代理环境变量，返回 host:port（无则空串） */
+    private static function detectProxy()
+    {
+        foreach (array('HTTPS_PROXY', 'https_proxy', 'HTTP_PROXY', 'http_proxy', 'ALL_PROXY', 'all_proxy') as $k) {
+            $v = getenv($k);
+            if ($v !== false && $v !== '') {
+                $v = str_replace(array('http://', 'https://'), '', trim($v));
+                $v = rtrim($v, '/');
+                if ($v !== '') return $v;
+            }
+        }
+        return '';
+    }
+
+    /** 通过 HTTP 代理 CONNECT 隧道连接 SMTP 并完成 TLS 握手，失败返回 null */
+    private function connectViaProxy($proxyAddr)
+    {
+        $sock = @stream_socket_client('tcp://' . $proxyAddr, $errno, $errstr, 8);
+        if (!$sock) return null;
+        stream_set_timeout($sock, 15);
+        fwrite($sock, 'CONNECT ' . SMTP_HOST . ':' . SMTP_PORT . ' HTTP/1.1' . "\r\n" . 'Host: ' . SMTP_HOST . ':' . SMTP_PORT . "\r\n\r\n");
+        /* 逐行读取代理响应头，读到空行为止 */
+        $head = '';
+        while (($line = fgets($sock, 512)) !== false) {
+            $head .= $line;
+            if ($line === "\r\n" || $line === "\n") break;
+        }
+        if (strpos($head, ' 200 ') === false) { fclose($sock); return null; }
+        /* TLS 握手：peer_name 必须指向 SMTP 主机（否则会按代理地址校验 *.163.com 证书而失败） */
+        stream_context_set_option($sock, array('ssl' => array(
+            'peer_name'       => SMTP_HOST,
+            'verify_peer'     => false,
+            'verify_peer_name' => false,
+        )));
+        for ($i = 0; $i < 3; $i++) {
+            $r = @stream_socket_enable_crypto($sock, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            if ($r === true) return $sock;
+            if ($r === 0) { usleep(150000); continue; } /* 握手未就绪，稍候重试 */
+            break; /* false = 失败 */
+        }
+        fclose($sock);
+        return null;
     }
 
     private function read()
@@ -92,16 +143,18 @@ class Mailer
     public function __destruct() { $this->close(); }
 }
 
-/** 发送邮件便捷函数（失败返回 false，异常信息记录到静默日志） */
-function send_mail($toEmail, $toName, $subject, $htmlBody)
+/** 发送邮件便捷函数（失败返回 false，异常信息记录到静默日志；$errDetail 可选回传失败原因） */
+function send_mail($toEmail, $toName, $subject, $htmlBody, &$errDetail = '')
 {
+    $errDetail = '';
     try {
         $m = new Mailer();
         $ok = $m->send($toEmail, $toName, $subject, $htmlBody);
         $m->close();
         return $ok;
     } catch (Exception $e) {
-        @file_put_contents(APP_ROOT . '/uploads/smtp_error.log', date('Y-m-d H:i:s') . ' ' . $toEmail . ' ' . $e->getMessage() . "\n", FILE_APPEND);
+        $errDetail = $e->getMessage();
+        @file_put_contents(APP_ROOT . '/uploads/smtp_error.log', date('Y-m-d H:i:s') . ' ' . $toEmail . ' ' . $errDetail . "\n", FILE_APPEND);
         return false;
     }
 }

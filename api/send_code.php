@@ -21,6 +21,18 @@ if ($last && (time() - strtotime($last['created_at'])) < 60) {
 $code = str_pad((string)mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
 db_exec("INSERT INTO verify_codes (email,code,expires_at) VALUES (?,?,DATE_ADD(NOW(), INTERVAL 5 MINUTE))", array($email, $code));
 
-$ok = send_mail($email, '新用户', '【Jay影视】注册验证码', mail_template_code($code));
-if (!$ok) json_out(array('code' => 4, 'msg' => '邮件发送失败，请稍后重试'));
+$err = '';
+$ok = send_mail($email, '新用户', '【Jay影视】注册验证码', mail_template_code($code), $err);
+if (!$ok) {
+    /* 发送失败回滚验证码，避免触发 60 秒频率限制 */
+    db_exec("DELETE FROM verify_codes WHERE email=? AND code=?", array($email, $code));
+    if (strpos($err, '535') !== false || stripos($err, 'authentication') !== false || strpos($err, '授权码') !== false) {
+        $msg = '邮件发送失败：SMTP 授权码认证被拒，请联系管理员检查 163 邮箱授权码';
+    } elseif (strpos($err, '连接') !== false) {
+        $msg = '邮件发送失败：无法连接邮件服务器，请稍后重试';
+    } else {
+        $msg = '邮件发送失败，请稍后重试';
+    }
+    json_out(array('code' => 4, 'msg' => $msg));
+}
 json_out(array('code' => 0, 'msg' => '发送成功'));

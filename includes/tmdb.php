@@ -5,7 +5,7 @@
 if (!defined('APP_ROOT')) { define('APP_ROOT', dirname(__DIR__)); }
 require_once APP_ROOT . '/includes/functions.php';
 
-define('TMDB_API', 'https://api.themoviedb.org/3/');
+define('TMDB_API', 'https://api.tmdb.org/3/');
 define('TMDB_CACHE_TTL', 21600); /* 6小时 */
 
 /**
