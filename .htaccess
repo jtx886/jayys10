@@ -1,0 +1,6 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<FilesMatch "^(install\.lock)$">
+  Require all denied
+</FilesMatch>
