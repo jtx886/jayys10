@@ -75,42 +75,46 @@
     location.href = 'login.php?msg=play';
   };
 
-  /* ---------- 收藏 ---------- */
-  $$('.btn-fav').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      if (!JAY.isLogin) return requireLogin();
-      var d = btn.dataset;
-      fetch('api/favorite.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF': JAY.csrf },
-        body: 'tmdb_id=' + d.id + '&type=' + d.type + '&title=' + encodeURIComponent(d.title) + '&poster=' + encodeURIComponent(d.poster || '')
-      }).then(function (r) { return r.json(); }).then(function (res) {
-        if (res.code === 401) return requireLogin();
-        if (res.code !== 0) return jayToast(res.msg || '操作失败');
-        jayToast(res.data === 'added' ? '已加入收藏' : '已取消收藏');
-        var ic = btn.querySelector('.ico');
-        btn.classList.toggle('on', res.data === 'added');
-        if (ic) ic.classList.toggle('i-heart-full', res.data === 'added');
-      }).catch(function () { jayToast('网络异常，请重试'); });
-    });
+  /* ---------- 收藏（事件委托：按钮无论何时渲染均可点击） ---------- */
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var btn = t && t.closest ? t.closest('.btn-fav') : null;
+    if (!btn) return;
+    if (!JAY.isLogin) return requireLogin();
+    var d = btn.dataset;
+    fetch('api/favorite.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF': JAY.csrf },
+      body: 'tmdb_id=' + d.id + '&type=' + d.type + '&title=' + encodeURIComponent(d.title || '') + '&poster=' + encodeURIComponent(d.poster || '')
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (res.code === 401) return requireLogin();
+      if (res.code !== 0) return jayToast(res.msg || '操作失败');
+      var added = res.data === 'added';
+      btn.classList.toggle('on', added);
+      var label = btn.querySelector('span');
+      if (label) label.textContent = added ? '已收藏' : '收藏';
+      jayToast(added ? '已加入收藏' : '已取消收藏');
+    }).catch(function () { jayToast('网络异常，请重试'); });
   });
 
-  /* ---------- 反馈点赞 ---------- */
-  $$('.btn-like').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      if (!JAY.isLogin) return requireLogin();
-      var id = btn.dataset.id;
-      fetch('api/like.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF': JAY.csrf },
-        body: 'feedback_id=' + id
-      }).then(function (r) { return r.json(); }).then(function (res) {
-        if (res.code === 401) return requireLogin();
-        if (res.code !== 0) return jayToast(res.msg || '操作失败');
-        btn.classList.toggle('liked', !!res.data.liked);
-        btn.querySelector('span').textContent = res.data.count;
-      }).catch(function () { jayToast('网络异常，请重试'); });
-    });
+  /* ---------- 反馈点赞（事件委托） ---------- */
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var btn = t && t.closest ? t.closest('.btn-like') : null;
+    if (!btn) return;
+    if (!JAY.isLogin) return requireLogin();
+    var id = btn.dataset.id;
+    fetch('api/like.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF': JAY.csrf },
+      body: 'feedback_id=' + id
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (res.code === 401) return requireLogin();
+      if (res.code !== 0) return jayToast(res.msg || '操作失败');
+      btn.classList.toggle('liked', !!res.data.liked);
+      var cnt = btn.querySelector('span');
+      if (cnt) cnt.textContent = res.data.count;
+    }).catch(function () { jayToast('网络异常，请重试'); });
   });
 
   /* ---------- 反馈回复折叠（>3条自动折叠） ---------- */

@@ -19,12 +19,17 @@ $season = max(1, intval(get('season', 1)));
 $ep = max(1, intval(get('ep', 1)));
 $audio = get('audio', 'ori');
 if (!in_array($audio, array('ori', 'cn'), true)) $audio = 'ori';
+$srcId = intval(get('source', 0));
 
 if ($id <= 0 || $title === '') redirect('index.php');
 
+/* 播放源：详情页选择的源（无效则回退默认源） */
+$curSource = $srcId > 0 ? source_by_id($srcId) : null;
+if (!$curSource) $curSource = default_source();
+
 /* 权限控制：未登录禁止播放 */
 if (!is_login()) {
-    $back = 'play.php?type=' . $type . '&id=' . $id . '&title=' . urlencode($title) . '&season=' . $season . '&ep=' . $ep . '&audio=' . $audio;
+    $back = 'play.php?type=' . $type . '&id=' . $id . '&title=' . urlencode($title) . '&season=' . $season . '&ep=' . $ep . '&audio=' . $audio . '&source=' . ($curSource ? intval($curSource['id']) : 0);
     redirect('login.php?msg=play&redirect=' . urlencode($back));
 }
 $U = current_user();
@@ -56,11 +61,11 @@ if ($type === 'tv') {
 }
 
 /* 生成解析播放地址（真实 m3u8 → urlencode → 拼接解析外壳） */
-$player = build_player($title, $season, $ep, $audio);
+$player = build_player($title, $season, $ep, $audio, $curSource);
 $epName = '';
 foreach ($player['eps'] as $i => $e) { if ($i + 1 === $player['ep']) { $epName = $e['name']; break; } }
 
-$base = 'play.php?type=' . $type . '&id=' . $id . '&title=' . urlencode($title) . '&season=' . $season;
+$base = 'play.php?type=' . $type . '&id=' . $id . '&title=' . urlencode($title) . '&season=' . $season . '&source=' . ($curSource ? intval($curSource['id']) : 0);
 $PAGE_TITLE = $title . ($type === 'tv' ? ' 第' . $ep . '集' : '');
 require __DIR__ . '/includes/header.php';
 ?>
@@ -86,7 +91,7 @@ require __DIR__ . '/includes/header.php';
   <div class="player-bar">
     <div style="min-width:0;flex:1">
       <h1><?php echo h($title); ?><?php echo $epName !== '' ? ' · ' . h($epName) : ''; ?></h1>
-      <div class="pb-sub"><?php echo $type === 'tv' ? '第 ' . $season . ' 季 · 第 ' . $player['ep'] . ' 集' : '正片'; ?><?php echo $audio === 'cn' ? ' · 普通话配音' : ''; ?></div>
+      <div class="pb-sub"><?php echo $type === 'tv' ? '第 ' . $season . ' 季 · 第 ' . $player['ep'] . ' 集' : '正片'; ?><?php echo $audio === 'cn' ? ' · 普通话配音' : ''; ?><?php if ($curSource): ?> · 播放源：<?php echo h($curSource['name']); ?><?php endif; ?></div>
     </div>
     <?php if (!$isZh): ?>
     <div class="audio-switch">

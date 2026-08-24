@@ -88,9 +88,10 @@ img{display:block;max-width:100%}
 
 .i-star::before{left:calc(50% - 8px);top:calc(50% - 8px);width:16px;height:16px;background:currentColor;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
 
-.i-heart::before,.i-heart::after{width:8px;height:12px;background:currentColor;border-radius:6px 6px 0 0}
-.i-heart::before{left:calc(50% - 6px);top:calc(50% - 6px);transform:rotate(-45deg);transform-origin:bottom left}
-.i-heart::after{left:calc(50% + 2px);top:calc(50% - 6px);transform:rotate(45deg);transform-origin:bottom right}
+.i-heart::before{left:calc(50% - 8px);top:calc(50% - 7px);width:16px;height:15px;background:currentColor;clip-path:polygon(50% 100%,44% 94%,37% 88%,29% 80%,21% 71%,14% 61%,8% 50%,4% 39%,1% 28%,0 18%,2% 10%,7% 4%,14% 1%,22% 0,30% 1%,37% 5%,44% 10%,50% 17%,56% 10%,63% 5%,70% 1%,78% 0,86% 1%,93% 4%,98% 10%,100% 18%,99% 28%,96% 39%,92% 50%,86% 61%,79% 71%,71% 80%,63% 88%,56% 94%)}
+
+/* 大拇指（点赞） */
+.i-thumb::before{left:calc(50% - 8px);top:calc(50% - 8px);width:16px;height:16px;background:currentColor;clip-path:polygon(34% 100%,34% 46%,24% 38%,12% 22%,8% 10%,14% 2%,26% 4%,34% 12%,44% 26%,56% 34%,97% 34%,100% 42%,100% 96%,94% 100%)}
 
 .i-eye::before{left:0;top:calc(50% - 4.5px);width:16px;height:9px;border:2px solid currentColor;border-radius:50%}
 .i-eye::after{left:calc(50% - 2px);top:calc(50% - 2px);width:4px;height:4px;background:currentColor;border-radius:50%}
@@ -131,8 +132,8 @@ img{display:block;max-width:100%}
 .i-edit::before{left:2px;top:2px;width:11px;height:4px;background:currentColor;transform:rotate(-45deg);border-radius:1px}
 .i-edit::after{left:calc(50% - 8px);top:calc(50% - 1px);width:5px;height:2px;background:currentColor;transform:rotate(-45deg);transform-origin:right center;left:auto;right:1px;top:9px}
 
-.i-send::before{left:0;top:calc(50% - 7px);width:0;height:0;border:8px solid transparent;border-left:14px solid currentColor;border-radius:2px}
-.i-send::after{left:4px;top:calc(50% - 6px);width:8px;height:8px;border:2px solid currentColor;border-top:0;border-right:0;transform:rotate(45deg);opacity:.75}
+.i-send::before{left:calc(50% - 8px);top:calc(50% - 7px);width:16px;height:15px;background:currentColor;clip-path:polygon(0 8%,100% 44%,0 100%,24% 50%)}
+.i-send::after{left:calc(50% - 8px);top:calc(50% - 7px);width:16px;height:15px;background:rgba(0,0,0,.28);clip-path:polygon(0 100%,24% 50%,0 8%,10% 26%)}
 
 .i-plus::before{left:calc(50% - 7px);top:calc(50% - 1px);width:14px;height:2px;background:currentColor;border-radius:2px}
 .i-plus::after{left:calc(50% - 1px);top:calc(50% - 7px);width:2px;height:14px;background:currentColor;border-radius:2px}
@@ -183,13 +184,10 @@ img{display:block;max-width:100%}
 .brand-name{font-size:19px;font-weight:800;letter-spacing:.5px;background:linear-gradient(90deg,var(--theme),#ff8a7e);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
 .main-nav{display:flex;align-items:center;gap:4px}
-.nav-link{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;color:var(--muted);font-size:14.5px;font-weight:500;position:relative;transition:color .22s,background .22s}
-.nav-link .ico{font-size:15px;transition:transform .25s}
+.nav-link{display:flex;align-items:center;padding:8px 14px;border-radius:10px;color:var(--muted);font-size:14.5px;font-weight:500;position:relative;transition:color .22s,background .22s}
 .nav-link:hover{color:var(--txt);background:rgba(255,255,255,.05)}
-.nav-link:hover .ico{transform:translateY(-2px)}
 .nav-link.active{color:#fff}
 .nav-link.active::after{content:"";position:absolute;left:14px;right:14px;bottom:2px;height:2.5px;border-radius:3px;background:var(--theme);box-shadow:0 0 10px var(--theme)}
-.nav-link.active .ico{color:var(--theme)}
 
 .header-right{margin-left:auto;display:flex;align-items:center;gap:14px}
 .search-box{display:flex;align-items:center;gap:8px;background:var(--card-2);border:1px solid var(--line);border-radius:22px;padding:8px 16px;width:250px;transition:border-color .25s,box-shadow .25s,width .3s}
@@ -447,7 +445,35 @@ img{display:block;max-width:100%}
 .fb-act{display:inline-flex;align-items:center;gap:7px;background:var(--card-2);border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:600;padding:7px 16px;border-radius:99px;cursor:pointer;transition:all .22s;font-family:inherit}
 .fb-act:hover{border-color:var(--theme);color:var(--theme);transform:translateY(-2px)}
 .fb-act.liked{background:var(--theme-soft);border-color:var(--theme);color:var(--theme)}
-.fb-act .ico{font-size:14px}
+.fb-act .ico{font-size:14px;transition:transform .25s}
+.fb-act.liked .ico{animation:thumbPop .4s ease}
+@keyframes thumbPop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+
+/* ---------- 收藏按钮（爱心）激活态 ---------- */
+.btn-fav .ico{transition:transform .25s,color .25s}
+.btn-fav:hover .ico{transform:scale(1.18)}
+.btn-fav.on{border-color:var(--theme)!important;color:var(--theme)!important;background:var(--theme-soft)}
+.btn-fav.on .ico{animation:heartBeat .55s ease}
+@keyframes heartBeat{0%{transform:scale(1)}30%{transform:scale(1.4)}55%{transform:scale(.9)}100%{transform:scale(1)}}
+
+/* ---------- 专用发送按钮（纸飞机，区别于站标播放三角） ---------- */
+.btn-send{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 30px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--theme),#ff6a5e);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 8px 24px var(--theme-glow);transition:transform .22s,filter .22s,box-shadow .22s}
+.btn-send:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 12px 30px var(--theme-glow)}
+.btn-send:active{transform:translateY(0) scale(.98)}
+.btn-send .ico{font-size:16px;transition:transform .25s}
+.btn-send:hover .ico{transform:translateX(4px) rotate(-8deg)}
+.btn-send.sm{padding:8px 20px;font-size:13.5px;border-radius:10px}
+
+/* ---------- 详情页播放源选择 ---------- */
+.source-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px dashed rgba(255,255,255,.14)}
+.source-bar .src-label{font-size:13px;color:var(--muted);font-weight:600;flex:none}
+.src-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:99px;border:1px solid var(--line);background:rgba(13,19,25,.65);color:#c3ccd6;font-size:13px;font-weight:600;text-decoration:none;transition:all .22s}
+.src-btn::before{content:"";width:7px;height:7px;border-radius:50%;background:#4a586a;transition:all .22s;flex:none}
+.src-btn:hover{border-color:var(--theme);color:#fff;transform:translateY(-2px)}
+.src-btn.active{border-color:var(--theme);background:var(--theme-soft);color:var(--theme)}
+.src-btn.active::before{background:var(--theme);box-shadow:0 0 8px var(--theme)}
+.src-btn .src-def{font-size:11px;color:var(--muted);font-weight:400}
+.src-btn.active .src-def{color:var(--theme)}
 
 /* 回复区 */
 .replies-box{margin-top:16px;background:var(--card-2);border:1px solid var(--line);border-radius:13px;padding:16px}

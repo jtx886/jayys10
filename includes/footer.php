@@ -23,6 +23,6 @@ window.JAY = {
   siteName: <?php echo json_encode($SITE_NAME); ?>
 };
 </script>
-<script src="assets/js/main.js?v=1.0"></script>
+<script src="assets/js/main.js?v=1.2"></script>
 </body>
 </html>

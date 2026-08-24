@@ -65,13 +65,13 @@ require __DIR__ . '/includes/header.php';
     <div class="fb-main">
       <div class="fb-meta">
         <span class="fb-author"><i class="ico i-user"></i><?php echo h($fb['username']); ?><?php if ($fb['role'] === 'admin'): ?><span class="dev-badge"><i class="ico i-crown"></i>开发者</span><?php endif; ?></span>
-        <span><i class="ico i-clock"></i><?php echo fmt_date($fb['created_at']); ?></span>
+        <span><?php echo fmt_date($fb['created_at']); ?></span>
         <?php if (!$fb['is_public']): ?><span class="tag theme">仅管理员可见</span><?php endif; ?>
       </div>
       <div class="fb-title"><?php echo h($fb['title']); ?></div>
       <div class="fb-content"><?php echo h($fb['content']); ?></div>
       <div class="fb-foot">
-        <button type="button" class="fb-act btn-like <?php echo $liked ? 'liked' : ''; ?>" data-id="<?php echo intval($fb['id']); ?>"><i class="ico i-heart"></i><span><?php echo intval($fb['likes']); ?></span></button>
+        <button type="button" class="fb-act btn-like <?php echo $liked ? 'liked' : ''; ?>" data-id="<?php echo intval($fb['id']); ?>"><i class="ico i-thumb"></i><span><?php echo intval($fb['likes']); ?></span></button>
         <span class="fb-act" style="cursor:default"><i class="ico i-chat"></i><?php echo count($replies); ?> 条回复</span>
       </div>
 
@@ -106,7 +106,7 @@ require __DIR__ . '/includes/header.php';
         <input type="hidden" name="action" value="reply">
         <input type="hidden" name="csrf" value="<?php echo h(csrf_token()); ?>">
         <textarea name="content" class="input" placeholder="友善回复，文明发言…" required></textarea>
-        <button class="btn primary" type="submit" style="align-self:flex-end"><i class="ico i-send"></i>回复</button>
+        <button class="btn-send sm" type="submit" style="align-self:flex-end"><i class="ico i-send"></i>回复</button>
       </form>
       <?php else: ?>
       <div class="alert warn" style="margin-top:14px;margin-bottom:0">登录后即可参与回复与点赞 <a href="login.php?redirect=<?php echo urlencode('feedback_detail.php?id=' . $fid); ?>" style="color:var(--theme);font-weight:700">去登录</a></div>

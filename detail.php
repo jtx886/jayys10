@@ -8,6 +8,7 @@
  */
 require_once __DIR__ . '/includes/init.php';
 require_once __DIR__ . '/includes/tmdb.php';
+require_once __DIR__ . '/includes/source_api.php';
 
 $type = get('type') === 'tv' ? 'tv' : 'movie';
 $id = intval(get('id'));
@@ -75,7 +76,13 @@ if (is_login()) {
 $audio = get('audio', 'ori');
 if (!in_array($audio, array('ori', 'cn'), true)) $audio = 'ori';
 
-$playUrl = 'play.php?type=' . $type . '&id=' . $id . '&title=' . urlencode($title) . '&season=' . ($isTV ? $season : 1) . '&ep=1&audio=' . $audio;
+/* 播放源：后台可管理，详情页选择（默认取后台设定的默认源） */
+$sources = db_all("SELECT * FROM sources ORDER BY is_default DESC, id ASC");
+$defSource = default_source();
+$srcId = intval(get('source', $defSource ? $defSource['id'] : 0));
+if ($srcId > 0 && !source_by_id($srcId)) $srcId = $defSource ? intval($defSource['id']) : 0;
+
+$playUrl = 'play.php?type=' . $type . '&id=' . $id . '&title=' . urlencode($title) . '&season=' . ($isTV ? $season : 1) . '&ep=1&audio=' . $audio . '&source=' . $srcId;
 $PAGE_TITLE = $title;
 require __DIR__ . '/includes/header.php';
 ?>
@@ -114,6 +121,19 @@ require __DIR__ . '/includes/header.php';
         </div>
         <?php endif; ?>
       </div>
+
+      <?php if (!empty($sources)): ?>
+      <!-- 播放源选择（后台播放源管理模块维护） -->
+      <div class="source-bar">
+        <span class="src-label">播放源</span>
+        <?php foreach ($sources as $s): ?>
+        <a class="src-btn <?php echo intval($s['id']) === $srcId ? 'active' : ''; ?>"
+           href="detail.php?type=<?php echo $type; ?>&id=<?php echo $id; ?><?php echo $isTV ? '&season=' . $season : ''; ?>&audio=<?php echo h($audio); ?>&source=<?php echo intval($s['id']); ?>">
+          <?php echo h($s['name']); ?><?php if (intval($s['is_default']) === 1): ?><span class="src-def">默认</span><?php endif; ?>
+        </a>
+        <?php endforeach; ?>
+      </div>
+      <?php endif; ?>
     </div>
   </div>
 </section>
@@ -134,7 +154,7 @@ function switchAudio(a) {
   </div>
   <div class="season-bar">
     <?php foreach ($validSeasons as $s): $sn = intval($s['season_number']); ?>
-    <a class="season-btn <?php echo $sn === $season ? 'active' : ''; ?>" href="detail.php?type=tv&id=<?php echo $id; ?>&season=<?php echo $sn; ?>&audio=<?php echo h($audio); ?>">
+    <a class="season-btn <?php echo $sn === $season ? 'active' : ''; ?>" href="detail.php?type=tv&id=<?php echo $id; ?>&season=<?php echo $sn; ?>&audio=<?php echo h($audio); ?>&source=<?php echo $srcId; ?>">
       第 <?php echo $sn; ?> 季<?php echo !empty($s['air_date']) ? ' · ' . substr($s['air_date'], 0, 4) : ''; ?>
     </a>
     <?php endforeach; ?>
@@ -159,7 +179,7 @@ function switchAudio(a) {
   <div class="ep-grid">
     <?php foreach ($seasonInfo['episodes'] as $ep):
         $epNum = intval($ep['episode_number']);
-        $epPlay = 'play.php?type=tv&id=' . $id . '&title=' . urlencode($title) . '&season=' . $season . '&ep=' . $epNum . '&audio=' . $audio;
+        $epPlay = 'play.php?type=tv&id=' . $id . '&title=' . urlencode($title) . '&season=' . $season . '&ep=' . $epNum . '&audio=' . $audio . '&source=' . $srcId;
         $still = !empty($ep['still_path']) ? tmdb_img($ep['still_path'], 'w300') : '';
     ?>
     <a class="ep-card" href="<?php echo h($epPlay); ?>">

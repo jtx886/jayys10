@@ -19,7 +19,7 @@ function nav_cls($k, $cur) { return $cur === $k ? 'nav-link active' : 'nav-link'
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo h($PAGE_TITLE); ?> - <?php echo h($SITE_NAME); ?></title>
 <meta name="description" content="<?php echo h($SITE_NAME); ?> - 在线高清影视，电影、剧集、动漫、综艺一站观看">
-<link rel="stylesheet" href="assets/css/style.css?v=1.0">
+<link rel="stylesheet" href="assets/css/style.css?v=1.2">
 <style>:root{--theme:<?php echo h($THEME); ?>;--theme-soft:rgba(229,9,20,.16)}</style>
 <style>
 /* 主题色派生（RGBA 混合，避免后端计算） */
@@ -40,12 +40,12 @@ function nav_cls($k, $cur) { return $cur === $k ? 'nav-link active' : 'nav-link'
     <input type="checkbox" id="nav-toggle" class="nav-toggle">
 
     <nav class="main-nav">
-      <a class="<?php echo nav_cls('home', $NAV_ACTIVE); ?>" href="index.php"><i class="ico i-home"></i><span>首页</span></a>
-      <a class="<?php echo nav_cls('movie', $NAV_ACTIVE); ?>" href="category.php?cat=movie"><i class="ico i-film"></i><span>电影</span></a>
-      <a class="<?php echo nav_cls('tv', $NAV_ACTIVE); ?>" href="category.php?cat=tv"><i class="ico i-tv"></i><span>剧集</span></a>
-      <a class="<?php echo nav_cls('anime', $NAV_ACTIVE); ?>" href="category.php?cat=anime"><i class="ico i-spark"></i><span>动漫</span></a>
-      <a class="<?php echo nav_cls('variety', $NAV_ACTIVE); ?>" href="category.php?cat=variety"><i class="ico i-mic"></i><span>综艺</span></a>
-      <a class="<?php echo nav_cls('feedback', $NAV_ACTIVE); ?>" href="feedback.php"><i class="ico i-chat"></i><span>反馈</span></a>
+      <a class="<?php echo nav_cls('home', $NAV_ACTIVE); ?>" href="index.php">首页</a>
+      <a class="<?php echo nav_cls('movie', $NAV_ACTIVE); ?>" href="category.php?cat=movie">电影</a>
+      <a class="<?php echo nav_cls('tv', $NAV_ACTIVE); ?>" href="category.php?cat=tv">剧集</a>
+      <a class="<?php echo nav_cls('anime', $NAV_ACTIVE); ?>" href="category.php?cat=anime">动漫</a>
+      <a class="<?php echo nav_cls('variety', $NAV_ACTIVE); ?>" href="category.php?cat=variety">综艺</a>
+      <a class="<?php echo nav_cls('feedback', $NAV_ACTIVE); ?>" href="feedback.php">反馈</a>
     </nav>
 
     <div class="header-right">

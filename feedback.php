@@ -83,7 +83,7 @@ require __DIR__ . '/includes/header.php';
         <label>详细内容</label>
         <textarea name="content" placeholder="请详细描述问题（至少5个字）" required></textarea>
       </div>
-      <button class="btn primary" type="submit"><i class="ico i-send"></i>提交反馈</button>
+      <button class="btn-send" type="submit"><i class="ico i-send"></i>提交反馈</button>
     </form>
   </div>
   <?php else: ?>
@@ -107,12 +107,12 @@ require __DIR__ . '/includes/header.php';
       <div class="fb-main">
         <div class="fb-meta">
           <span class="fb-author"><i class="ico i-user"></i><?php echo h($f['username']); ?><?php if ($f['role'] === 'admin'): ?><span class="dev-badge"><i class="ico i-crown"></i>开发者</span><?php endif; ?></span>
-          <span><i class="ico i-clock"></i><?php echo fmt_date($f['created_at']); ?></span>
+          <span><?php echo fmt_date($f['created_at']); ?></span>
         </div>
         <div class="fb-title"><a href="feedback_detail.php?id=<?php echo intval($f['id']); ?>"><?php echo h($f['title']); ?></a></div>
         <div class="fb-content"><?php echo h(mb_substr($f['content'], 0, 160, 'UTF-8')); ?><?php echo mb_strlen($f['content'], 'UTF-8') > 160 ? '…' : ''; ?></div>
         <div class="fb-foot">
-          <button type="button" class="fb-act btn-like <?php echo in_array(intval($f['id']), $myLiked, true) ? 'liked' : ''; ?>" data-id="<?php echo intval($f['id']); ?>"><i class="ico i-heart"></i><span><?php echo intval($f['likes']); ?></span></button>
+          <button type="button" class="fb-act btn-like <?php echo in_array(intval($f['id']), $myLiked, true) ? 'liked' : ''; ?>" data-id="<?php echo intval($f['id']); ?>"><i class="ico i-thumb"></i><span><?php echo intval($f['likes']); ?></span></button>
           <a class="fb-act" href="feedback_detail.php?id=<?php echo intval($f['id']); ?>"><i class="ico i-chat"></i><?php echo intval($f['replies']); ?> 条回复</a>
         </div>
       </div>

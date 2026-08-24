@@ -24,8 +24,8 @@ $menus = array(
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo h($PAGE_TITLE); ?> - <?php echo h(setting('site_name', 'Jay影视')); ?> 后台</title>
-<link rel="stylesheet" href="../assets/css/style.css?v=1.0">
-<link rel="stylesheet" href="../assets/css/admin.css?v=1.0">
+<link rel="stylesheet" href="../assets/css/style.css?v=1.2">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1.2">
 <style>:root{--theme:<?php echo h($THEME); ?>;--theme-soft:rgba(229,9,20,.16)}</style>
 </head>
 <body class="admin-body">
